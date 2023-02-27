@@ -1,7 +1,34 @@
 {
   "name": "vue3-extend-calendar",
-  "version": "0.0.0",
+  "private": false,
+  "version": "0.0.2",
   "type": "module",
+  "files": [
+    "/dist"
+  ],
+  "main": "./dist/vue3-extend-calendar.umd.cjs",
+  "module": "./dist/vue3-extend-calendar.js",
+  "types": "./dist/main.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/vue3-extend-calendar.js",
+      "require": "./dist/vue3-extend-calendar.umd.js"
+    },
+    "./dist/style.css": "./dist/style.css"
+  },
+  "author": "<kng02068@naver.com> (https://github.com/daechu5657/vue3-extend-calendar)",
+  "license": "MIT",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/daechu5657/vue3-extend-calendar"
+  },
+  "homepage": "",
+  "keywords": [
+    "vue3",
+    "vue3-extend-calendar",
+    "calendar"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build && vue-tsc --emitDeclarationOnly",
@@ -11,7 +38,8 @@
     "@types/node": "^18.11.9",
     "dayjs": "^1.11.7",
     "sass": "^1.56.1",
-    "vue": "^3.2.41"
+    "vue": "^3.2.41",
+    "vue3-extend-calendar": "^0.0.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.2.0",
