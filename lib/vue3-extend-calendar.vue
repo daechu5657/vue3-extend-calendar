@@ -75,12 +75,12 @@ dayjs.extend(isSameOrBefore);
 
 const emits = defineEmits(['getCellData', 'getChangedDate']);
 const props = defineProps({
-  data: { type: Array, default: [] },
-  total: { type: Boolean, default: true },
-  totalData: { type: Array },
-  columns: { type: Array, default: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'] },
-  darkMode: { type: Boolean, default: false },
-  dateScope: { type: Array, default: ['0000-00', '9999-99'] },
+  data: { type: Array, default: [], require: false },
+  total: { type: Boolean, default: true, require: false },
+  totalData: { type: Array, require: false },
+  columns: { type: Array, default: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'], require: false },
+  darkMode: { type: Boolean, default: false, require: false },
+  dateScope: { type: Array, default: ['0000-00', '9999-99'], require: false },
 });
 const propData = computed(() => props.data);
 const propTotal = computed(() => props.total);

@@ -1,7 +1,7 @@
 {
   "name": "vue3-extend-calendar",
   "private": false,
-  "version": "0.0.3",
+  "version": "0.0.5",
   "type": "module",
   "files": [
     "/dist"
@@ -12,7 +12,7 @@
   "exports": {
     ".": {
       "import": "./dist/vue3-extend-calendar.js",
-      "require": "./dist/vue3-extend-calendar.umd.js"
+      "require": "./dist/vue3-extend-calendar.umd.cjs"
     },
     "./dist/style.css": "./dist/style.css"
   },
@@ -39,7 +39,7 @@
     "dayjs": "^1.11.7",
     "sass": "^1.56.1",
     "vue": "^3.2.41",
-    "vue3-extend-calendar": "^0.0.2"
+    "vue3-extend-calendar": "^0.0.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^3.2.0",
