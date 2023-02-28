@@ -1,8 +1,8 @@
-import vue3ExtendCalendar from '../dist/vue3-extend-calendar.vue';
 import '../dist/style.css';
+import vue3ExtendCalendar from './vue3-extend-calendar.vue';
 
 export default {
-  install: (app: any, options: any) => {
-    app.component('vue3-extend-calendar', vue3ExtendCalendar);
+  install: (App: any, options: any) => {
+    App.component('vue3-extend-calendar', vue3ExtendCalendar);
   },
 };

@@ -4,10 +4,10 @@ import './style.css';
 import App from './App.vue';
 
 // import vue3ExtendCalendar from 'vue3-extend-calendar';
-import vue3ExtendCalendar from '../dist/vue3-extend-calendar';
-import 'vue3-extend-calendar/dist/style.css';
+// import vue3ExtendCalendar from '../dist/vue3-extend-calendar';
+// import 'vue3-extend-calendar/dist/style.css';
+// app.use(vue3ExtendCalendar);
 
 const app = createApp(App);
 
-app.use(vue3ExtendCalendar);
 app.mount('#app');

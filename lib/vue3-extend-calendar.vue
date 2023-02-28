@@ -38,23 +38,23 @@
             >
               <div
                 class="vue3-extend-calendar-tbody-inner-wrap"
-                :class="{ null: item.date === null, today: item.fullDate === dayjs().format('YYYY-MM-DD') }"
+                :class="{ null: item?.date === null, today: item?.fullDate === dayjs().format('YYYY-MM-DD') }"
                 :data-darkMode="darkMode"
               >
                 <div class="vue3-extend-calendar-tbody-date">
-                  <slot name="dateCellTitle" class :data="item" v-if="item.date !== null && !item.duration">
-                    {{ item.date }}
+                  <slot name="dateCellTitle" class :data="item" v-if="item?.date !== null && !item?.duration">
+                    {{ item?.date }}
                   </slot>
-                  <slot name="nullCellContent" :data="item" v-if="item.date === null" />
-                  <slot name="weekCellTitle" :data="item" v-if="item.date === 'Week'"> </slot>
-                  <slot name="monthCellTitle" :data="item" v-if="item.date === 'Month'"> </slot>
+                  <slot name="nullCellContent" :data="item" v-if="item?.date === null" />
+                  <slot name="weekCellTitle" :data="item" v-if="item?.date === 'Week'"> </slot>
+                  <slot name="monthCellTitle" :data="item" v-if="item?.date === 'Month'"> </slot>
                 </div>
 
                 <div class="vue3-extend-calendar-tbody-content-wrap" :data-darkMode="darkMode">
-                  <slot name="dateCellContent" :data="item" v-if="item.date !== null && !item.duration" />
-                  <slot name="nullCellTitle" :data="item" v-if="item.date === null" />
-                  <slot name="weekCellContent" :data="item" v-if="item.date === 'Week'" />
-                  <slot name="monthCellContent" :data="item" v-if="item.date === 'Month'" />
+                  <slot name="dateCellContent" :data="item" v-if="item?.date !== null && !item?.duration" />
+                  <slot name="nullCellTitle" :data="item" v-if="item?.date === null" />
+                  <slot name="weekCellContent" :data="item" v-if="item?.date === 'Week'" />
+                  <slot name="monthCellContent" :data="item" v-if="item?.date === 'Month'" />
                 </div>
               </div>
             </td>
@@ -75,9 +75,9 @@ dayjs.extend(isSameOrBefore);
 
 const emits = defineEmits(['getCellData', 'getChangedDate']);
 const props = defineProps({
-  data: { type: Array, default: [], require: false },
+  data: { type: Object, default: [], require: false },
   total: { type: Boolean, default: true, require: false },
-  totalData: { type: Array, require: false },
+  totalData: { type: Object, require: false },
   columns: { type: Array, default: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'], require: false },
   darkMode: { type: Boolean, default: false, require: false },
   dateScope: { type: Array, default: ['0000-00', '9999-99'], require: false },
@@ -105,8 +105,8 @@ const expectationDate = ref({
   ),
 });
 
-const getBaseCalenderArr = (val: any) => {
-  const result = new Promise<void>((resolve, reject) => {
+const getBaseCalenderArr = async (val: any) =>
+  await new Promise((resolve, reject) => {
     const injectMonth = computed(() => current.value.month - 1);
     const numberRepeat = dayjs().month(injectMonth.value).daysInMonth();
 
@@ -133,7 +133,11 @@ const getBaseCalenderArr = (val: any) => {
         }
       } else {
         for (let date = 0; date < numberRepeat; date++) {
-          arr.push({ fullDate: getFullDate(date), date: String(date + 1).padStart(2, '0'), data: val[date] });
+          arr.push({
+            fullDate: getFullDate(date),
+            date: String(date + 1).padStart(2, '0'),
+            data: val[date] ? val[date] : null,
+          });
         }
       }
     } else {
@@ -143,10 +147,8 @@ const getBaseCalenderArr = (val: any) => {
     }
     resolve(arr);
   });
-  return result;
-};
-const setCalendar = async (arr: any) => {
-  const result = await new Promise<void>((resolve, reject) => {
+const setCalendar = async (arr: any) =>
+  new Promise((resolve, reject) => {
     let month: any = [];
     let week: any = {};
 
@@ -208,36 +210,38 @@ const setCalendar = async (arr: any) => {
       };
       month.push(monthTotal);
     }
-
     resolve(month);
   });
-
-  return result;
-};
-const setTotalData = async (val: any) => {
-  const result = new Promise<void>((resolve, reject) => {
+const setTotalData = async (val: any) =>
+  await new Promise(async (resolve, reject) => {
     const arr = val.slice(0);
-    const isOrder = propTotalData.value.map((e: any) => e.duration).includes(undefined);
 
-    if (isOrder) {
-      propTotalData.value?.forEach((item: any) => {
-        arr.filter((el: any) => {
-          const duration = el.total.duration.replaceAll(' ', '');
-          if (duration === item.duration) {
-            el.total.data = item;
-          }
+    const data = await propTotalData.value;
+
+    if (data) {
+      const isOrder = data.map((e: any) => e.duration).includes(undefined);
+      if (isOrder) {
+        data?.forEach((item: any) => {
+          arr.filter((el: any) => {
+            const duration = el.total.duration.replaceAll(' ', '');
+            if (duration === item.duration) {
+              el.total.data = item;
+            }
+          });
         });
-      });
+      } else {
+        data?.forEach((item: any, index: number) => {
+          arr[index].total.data = item;
+        });
+      }
+      resolve(arr);
     } else {
-      propTotalData.value?.forEach((item: any, index: number) => {
-        arr[index].total.data = item;
+      val.forEach((item: any) => {
+        item.total.data = null;
       });
+      resolve(arr);
     }
-
-    resolve(arr);
   });
-  return result;
-};
 const process = async () => {
   loading.value = true;
   columns.value = propColumns.value;
@@ -245,11 +249,15 @@ const process = async () => {
 
   if (!propTotal.value) columns.value.pop();
 
-  const getBaseArr = await getBaseCalenderArr(propData.value);
+  const data = await propData.value;
+
+  const getBaseArr = await getBaseCalenderArr(data);
+  showData.value = getBaseArr;
+
   const getCalendar = await setCalendar(getBaseArr);
+  showData.value = getCalendar;
 
   if (!propTotal.value) {
-    showData.value = getCalendar;
     loading.value = false;
   } else {
     showData.value = await setTotalData(getCalendar);
@@ -267,32 +275,9 @@ const getCellData = (cellData: any) => {
     if (Number(data.date)) {
       data.date = Number(data.date);
     }
-    emits('getCellData', cellData);
+    emits('getCellData', data);
   }
 };
-
-onBeforeMount(async () => {
-  await process();
-});
-
-watch(
-  () => propData,
-  (val: any) => {
-    process();
-  },
-  {
-    deep: true,
-  }
-);
-watch(
-  () => propTotalData,
-  (val: any) => {
-    process();
-  },
-  {
-    deep: true,
-  }
-);
 watch(
   current,
   async (val: any) => {
@@ -308,13 +293,13 @@ watch(
   },
   { deep: true }
 );
-watch(
-  propColumns,
-  async (val: any) => {
-    process();
-  },
-  { deep: true }
-);
+watch(props, () => {
+  process();
+});
+
+onBeforeMount(async () => {
+  await process();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -532,7 +517,6 @@ watch(
     min-height: 86px;
     max-height: 86px;
     overflow-y: auto;
-    // color: #000000d9;
     line-height: 1.5715;
     text-align: left;
     text-overflow: ellipsis;
