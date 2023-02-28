@@ -303,10 +303,13 @@ onBeforeMount(async () => {
 </script>
 
 <style lang="scss" scoped>
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 * {
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', Segoe UI Symbol, 'Noto Color Emoji';
 }
 .vue3-extend-calendar-wrap {
   position: relative;
@@ -335,7 +338,7 @@ onBeforeMount(async () => {
   flex-flow: row;
   align-items: center;
   justify-content: center;
-  padding: 30px 0;
+  padding: 30px 0 60px 0 !important;
   .date {
     font-weight: 600;
     font-size: 30px;
