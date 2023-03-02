@@ -1,25 +1,13 @@
 <template>
   <vue3ExtendCalendar
+    :data="data"
     :columns="isColumns"
     :dateScope="['2023-01', '2023-10']"
     @getCellData="getCellData"
     @getChangedDate="getChangedDate"
   >
     <template #dateCellContent="{ data }">
-      <ul>
-        <li>
-          {{ data?.data?.date }}
-        </li>
-        <li>
-          {{ data?.data?.date }}
-        </li>
-        <li>
-          {{ data?.data?.date }}
-        </li>
-        <li>
-          {{ data?.data?.date }}
-        </li>
-      </ul>
+      {{ data }}
     </template>
   </vue3ExtendCalendar>
 </template>
@@ -89,7 +77,7 @@ const getCalendarData = async () => {
       { date: '2023-02-27', cash: null, point: null, charge: null, exchange: null },
       { date: '2023-02-28', cash: null, point: null, charge: null, exchange: null },
     ];
-  }, 3000);
+  }, 500);
 };
 
 onBeforeMount(() => {

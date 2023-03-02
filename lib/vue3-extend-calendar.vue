@@ -42,7 +42,7 @@
                 :data-darkMode="darkMode"
               >
                 <div class="vue3-extend-calendar-tbody-date">
-                  <slot name="dateCellTitle" class :data="item" v-if="item?.date !== null && !item?.duration">
+                  <slot name="dateCellTitle" :data="item" v-if="item?.date !== null && !item?.duration">
                     {{ item?.date }}
                   </slot>
                   <slot name="nullCellContent" :data="item" v-if="item?.date === null" />
@@ -50,12 +50,14 @@
                   <slot name="monthCellTitle" :data="item" v-if="item?.date === 'Month'"> </slot>
                 </div>
 
-                <div class="vue3-extend-calendar-tbody-content-wrap" :data-darkMode="darkMode">
-                  <slot name="dateCellContent" :data="item" v-if="item?.date !== null && !item?.duration" />
-                  <slot name="nullCellTitle" :data="item" v-if="item?.date === null" />
-                  <slot name="weekCellContent" :data="item" v-if="item?.date === 'Week'" />
-                  <slot name="monthCellContent" :data="item" v-if="item?.date === 'Month'" />
-                </div>
+                <TransitionGroup name="list" tag="div">
+                  <div class="vue3-extend-calendar-tbody-content-wrap" :data-darkMode="darkMode">
+                    <slot name="dateCellContent" :data="item" v-if="item?.date !== null && !item?.duration" />
+                    <slot name="nullCellTitle" :data="item" v-if="item?.date === null" />
+                    <slot name="weekCellContent" :data="item" v-if="item?.date === 'Week'" />
+                    <slot name="monthCellContent" :data="item" v-if="item?.date === 'Month'" />
+                  </div>
+                </TransitionGroup>
               </div>
             </td>
           </tr>
@@ -244,6 +246,7 @@ const setTotalData = async (val: any) =>
   });
 const process = async () => {
   loading.value = true;
+  showData.value = [];
   columns.value = propColumns.value;
   columns.value.length = 8;
 
@@ -307,6 +310,15 @@ onBeforeMount(async () => {
 </script>
 
 <style lang="scss" scoped>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
 ul {
   list-style-type: none;
   padding: 0;
@@ -391,11 +403,11 @@ ul {
   background: rgb(255 255 255 / 50%);
   opacity: 1;
   visibility: visible;
-  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  transition: all 0.5s;
   &.hide {
     opacity: 0;
     visibility: hidden;
-    transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
+    transition: all 0.5s;
   }
   .loading-items {
     position: relative;
@@ -420,7 +432,7 @@ ul {
       border-radius: 100%;
       transform: scale(0.75);
       transform-origin: 50% 50%;
-      opacity: 0.3 !important;
+      opacity: 0.7 !important;
       animation: spinMove 1s infinite linear alternate;
     }
     .item:nth-child(1) {
