@@ -75,7 +75,7 @@ dayjs.extend(isSameOrBefore);
 
 const emits = defineEmits(['getCellData', 'getChangedDate']);
 const props = defineProps({
-  data: { type: Object, default: [], require: false },
+  data: { type: Object, default: 'default', require: false },
   total: { type: Boolean, default: true, require: false },
   totalData: { type: Object, require: false },
   columns: { type: Array, default: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'], require: false },
@@ -249,19 +249,23 @@ const process = async () => {
 
   if (!propTotal.value) columns.value.pop();
 
-  const data = await propData.value;
+  let data: any = propData.value;
 
-  const getBaseArr = await getBaseCalenderArr(data);
+  const getBaseArr = await getBaseCalenderArr(data === 'default' ? {} : data);
   showData.value = getBaseArr;
 
   const getCalendar = await setCalendar(getBaseArr);
   showData.value = getCalendar;
 
-  if (!propTotal.value) {
-    loading.value = false;
-  } else {
-    showData.value = await setTotalData(getCalendar);
-    loading.value = false;
+  const isEmpty = Object.keys(data).length <= 0 ? true : false;
+
+  if (!isEmpty) {
+    if (!propTotal.value) {
+      loading.value = false;
+    } else {
+      showData.value = await setTotalData(getCalendar);
+      loading.value = false;
+    }
   }
 };
 const changeCalendar = (type: any, value: number) => {
@@ -289,11 +293,11 @@ watch(
       current.value.year -= 1;
     }
 
-    await process();
+    // await process();
   },
   { deep: true }
 );
-watch(props, () => {
+watch(props, (val) => {
   process();
 });
 
@@ -351,7 +355,7 @@ ul {
     width: 12.5px;
     height: 27.5px;
     &.disabled {
-      opacity: 0.2;
+      opacity: 0.2 !important;
       cursor: default;
       pointer-events: none;
     }
@@ -363,11 +367,10 @@ ul {
     background-repeat: no-repeat;
     background-position: 50% 50%;
     position: relative;
-    top: 2px;
     cursor: pointer;
     transition: 0.3s;
     &:hover {
-      opacity: 0.5;
+      opacity: 0.5 !important;
     }
   }
   .arrow-right {
@@ -386,9 +389,13 @@ ul {
   width: 100%;
   height: 100%;
   background: rgb(255 255 255 / 50%);
-  transition: background 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
   &.hide {
-    display: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s cubic-bezier(0.075, 0.82, 0.165, 1);
   }
   .loading-items {
     position: relative;
@@ -413,7 +420,7 @@ ul {
       border-radius: 100%;
       transform: scale(0.75);
       transform-origin: 50% 50%;
-      opacity: 0.3;
+      opacity: 0.3 !important;
       animation: spinMove 1s infinite linear alternate;
     }
     .item:nth-child(1) {
@@ -440,7 +447,7 @@ ul {
     }
     @keyframes spinMove {
       to {
-        opacity: 1;
+        opacity: 1 !important;
       }
     }
     @keyframes rotate {
@@ -579,7 +586,7 @@ ul {
 }
 [class*='arrow'][data-darkMode='true'] {
   filter: invert(100%) sepia(3%) saturate(0%) hue-rotate(138deg) brightness(102%) contrast(103%);
-  opacity: 0.8;
+  opacity: 0.8 !important;
 }
 [class*='vue3-extend-calendar-loading'][data-darkMode='true'] {
   background: #1414148f;

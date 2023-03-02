@@ -1,30 +1,44 @@
 <template>
   <vue3ExtendCalendar
-    :data="propData"
-    :totalData="propTotalData"
-    :columns="propColumns"
-    :total="true"
+    :columns="isColumns"
     :dateScope="['2023-01', '2023-10']"
-    darkMode
     @getCellData="getCellData"
     @getChangedDate="getChangedDate"
   >
-    <template #headerCell="{ data }"></template>
-    <template #dateCellTitle="{ data }"></template>
-    <template #dateCellContent="{ data }"> </template>
-    <template #weekCellTitle="{ data }"> </template>
-    <template #weekCellContent="{ data }"> </template>
-    <template #monthCellTitle="{ data }"> </template>
-    <template #monthCellContent="{ data }"> </template>
-    <template #nullCellTitle="{ data }"> </template>
-    <template #nullCellContent="{ data }"> </template>
+    <template #dateCellContent="{ data }">
+      <ul>
+        <li>
+          {{ data?.data?.date }}
+        </li>
+        <li>
+          {{ data?.data?.date }}
+        </li>
+        <li>
+          {{ data?.data?.date }}
+        </li>
+        <li>
+          {{ data?.data?.date }}
+        </li>
+      </ul>
+    </template>
   </vue3ExtendCalendar>
 </template>
 
 <script setup lang="ts">
 import vue3ExtendCalendar from '../lib/vue3-extend-calendar.vue';
 
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
+const data: any = ref([]);
+const isColumns = [
+  'table.thead.sun',
+  'table.thead.mon',
+  'table.thead.tue',
+  'table.thead.wed',
+  'table.thead.thu',
+  'table.thead.fri',
+  'table.thead.sat',
+  'table.thead.total',
+];
 
 const propTotalData = [
   { data: '1', duration: '2023-02-01~2023-02-04' },
@@ -34,282 +48,51 @@ const propTotalData = [
   { data: '5', duration: '2023-02-05~2023-02-11' },
   { data: '월합계', duration: '2023-02-05~2023-02-11' },
 ];
-const propColumns = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'];
-const propData: any = ref([
-  {
-    date: '2023-02-01',
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    date: '2023-02-08',
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.77142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-  {
-    coin_Cd: 3,
-    coin_Amount: '816.97086746',
-    coin_Fee: '139.5068553',
-    coin_Actual: '836.96536296',
-    currency_Amount: '1043596.55',
-    currency_Fee: '178205.71',
-    currency_Actual: '1069137.46',
-  },
-  {
-    coin_Cd: 6,
-    coin_Amount: '61.7asdasdasd7142177',
-    coin_Fee: '15.44285544',
-    coin_Actual: '77.2142772',
-    currency_Amount: '4384',
-    currency_Fee: '1096',
-    currency_Actual: '5480',
-  },
-]);
-
-const test = () =>
-  new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(propData.value);
-    }, 100);
-  });
-const test1 = () =>
-  new Promise((resolve, reject) => {
-    setTimeout(() => {
-      console.log(propTotalData);
-      resolve(propTotalData);
-    }, 2000);
-  });
 
 const getCellData = (val: any) => {
   console.log(val);
 };
 const getChangedDate = (val: any) => {
-  console.log(val);
+  getCalendarData();
 };
+
+const getCalendarData = async () => {
+  data.value = {};
+  setTimeout(() => {
+    data.value = [
+      { date: '2023-02-01', cash: '11719', point: '-1', charge: '212', exchange: null },
+      { date: '2023-02-02', cash: '46219', point: null, charge: '10100', exchange: '1008' },
+      { date: '2023-02-03', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-04', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-05', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-06', cash: '37590', point: null, charge: '10', exchange: null },
+      { date: '2023-02-07', cash: '86736', point: null, charge: '301', exchange: '1000' },
+      { date: '2023-02-08', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-09', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-10', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-11', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-12', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-13', cash: '150540', point: null, charge: '35005', exchange: null },
+      { date: '2023-02-14', cash: '10301', point: null, charge: '15301', exchange: null },
+      { date: '2023-02-15', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-16', cash: '8601', point: '210', charge: '8500', exchange: null },
+      { date: '2023-02-17', cash: '21002', point: null, charge: '21002', exchange: null },
+      { date: '2023-02-18', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-19', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-20', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-21', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-22', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-23', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-24', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-25', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-26', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-27', cash: null, point: null, charge: null, exchange: null },
+      { date: '2023-02-28', cash: null, point: null, charge: null, exchange: null },
+    ];
+  }, 3000);
+};
+
+onBeforeMount(() => {
+  getCalendarData();
+});
 </script>
