@@ -50,14 +50,12 @@
                   <slot name="monthCellTitle" :data="item" v-if="item?.date === 'Month'"> </slot>
                 </div>
 
-                <TransitionGroup name="list" tag="div">
-                  <div class="vue3-extend-calendar-tbody-content-wrap" :data-darkMode="darkMode">
-                    <slot name="dateCellContent" :data="item" v-if="item?.date !== null && !item?.duration" />
-                    <slot name="nullCellTitle" :data="item" v-if="item?.date === null" />
-                    <slot name="weekCellContent" :data="item" v-if="item?.date === 'Week'" />
-                    <slot name="monthCellContent" :data="item" v-if="item?.date === 'Month'" />
-                  </div>
-                </TransitionGroup>
+                <div class="vue3-extend-calendar-tbody-content-wrap" :data-darkMode="darkMode">
+                  <slot name="dateCellContent" :data="item" v-if="item?.date !== null && !item?.duration" />
+                  <slot name="nullCellTitle" :data="item" v-if="item?.date === null" />
+                  <slot name="weekCellContent" :data="item" v-if="item?.date === 'Week'" />
+                  <slot name="monthCellContent" :data="item" v-if="item?.date === 'Month'" />
+                </div>
               </div>
             </td>
           </tr>
