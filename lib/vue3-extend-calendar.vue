@@ -521,6 +521,7 @@ ul {
     &.today {
       color: #1890ff;
       background: #e6f7ff;
+      border-color: #1890ff;
     }
   }
   &-date {
@@ -593,6 +594,7 @@ ul {
 [class*='today'][data-darkMode='true'] {
   background: #111b26;
   color: #177ddc;
+  border-color: #177ddc;
 }
 [class*='arrow'][data-darkMode='true'] {
   filter: invert(100%) sepia(3%) saturate(0%) hue-rotate(138deg) brightness(102%) contrast(103%);
