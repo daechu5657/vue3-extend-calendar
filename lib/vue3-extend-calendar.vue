@@ -42,19 +42,19 @@
                 :data-darkMode="darkMode"
               >
                 <div class="vue3-extend-calendar-tbody-date">
-                  <slot name="dateCellTitle" :data="item" v-if="item?.date !== null && !item?.duration">
+                  <slot name="dateCellTitle" :data="item" v-if="item?.date !== null && !item?.info">
                     {{ item?.date }}
                   </slot>
                   <slot name="nullCellContent" :data="item" v-if="item?.date === null" />
-                  <slot name="weekCellTitle" :data="item" v-if="item?.date === 'Week'"> </slot>
-                  <slot name="monthCellTitle" :data="item" v-if="item?.date === 'Month'"> </slot>
+                  <slot name="weekCellTitle" :data="item" v-if="item?.info === 'week'"> </slot>
+                  <slot name="monthCellTitle" :data="item" v-if="item?.info === 'month'"> </slot>
                 </div>
 
                 <div class="vue3-extend-calendar-tbody-content-wrap" :data-darkMode="darkMode">
-                  <slot name="dateCellContent" :data="item" v-if="item?.date !== null && !item?.duration" />
+                  <slot name="dateCellContent" :data="item" v-if="item?.date !== null && !item?.info" />
                   <slot name="nullCellTitle" :data="item" v-if="item?.date === null" />
-                  <slot name="weekCellContent" :data="item" v-if="item?.date === 'Week'" />
-                  <slot name="monthCellContent" :data="item" v-if="item?.date === 'Month'" />
+                  <slot name="weekCellContent" :data="item" v-if="item?.info === 'week'" />
+                  <slot name="monthCellContent" :data="item" v-if="item?.info === 'month'" />
                 </div>
               </div>
             </td>
@@ -170,9 +170,9 @@ const setCalendar = async (arr: any) =>
         if (propTotalData.value !== 'default') {
           const duration: any = Object.values(week).filter((e: any) => e?.fullDate !== null);
           week['total'] = {
-            date: 'Week',
+            info: 'week',
             order: weekIndex + 1,
-            duration: `${duration[0]?.fullDate}~${duration[duration.length - 1]?.fullDate}`,
+            date: `${duration[0]?.fullDate}~${duration[duration.length - 1]?.fullDate}`,
           };
         }
         month.push(week);
@@ -205,8 +205,8 @@ const setCalendar = async (arr: any) =>
       const endYYYYMMDD = dayjs(current.value.YYYYMM).endOf('month').format('YYYY-MM-DD');
 
       monthTotal['total'] = {
-        date: 'Month',
-        duration: `${startYYYYMMDD}~${endYYYYMMDD}`,
+        info: 'month',
+        date: `${startYYYYMMDD}~${endYYYYMMDD}`,
       };
       month.push(monthTotal);
     }
@@ -218,12 +218,12 @@ const setTotalData = async (val: any) =>
 
     const data = await propTotalData.value;
 
-    const isEmpty = data.map((e: any) => e.duration).length > 0 ? true : false;
+    const isEmpty = data.map((e: any) => e.date).length > 0 ? true : false;
     if (isEmpty) {
       data?.forEach((item: any) => {
         arr.filter((el: any) => {
-          const duration = el.total.duration.replaceAll(' ', '');
-          if (duration === item.duration) {
+          const duration = el.total.date.replaceAll(' ', '');
+          if (duration === item.date) {
             el.total.data = item;
           } else {
             if (el.total.data === undefined) el.total.data = null;
@@ -251,18 +251,27 @@ const process = async () => {
   const getBaseArr = await getBaseCalenderArr(data === 'default' ? {} : data);
   showData.value = getBaseArr;
 
-  const getCalendar = await setCalendar(getBaseArr);
-  showData.value = getCalendar;
+  const getCalendar: any = await setCalendar(getBaseArr);
+
+  const getCalendarWithoutData = getCalendar.map((e: any) => {
+    let arr: any = {};
+    Object.keys(e).map((key: any) => {
+      const { data, ...otherData } = e[key];
+      arr[`${key}`] = otherData;
+    });
+    return arr;
+  });
+
+  showData.value = getCalendarWithoutData;
 
   const isEmpty = Object.keys(data).length <= 0 ? true : false;
-
   if (!isEmpty) {
     if (totalData === 'default') {
       loading.value = false;
     } else {
-      showData.value = await setTotalData(getCalendar);
       const isTotalDataEmpty = Object.keys(totalData).length <= 0 ? true : false;
       if (!isTotalDataEmpty) {
+        showData.value = await setTotalData(getCalendar);
         loading.value = false;
       }
     }

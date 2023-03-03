@@ -8,10 +8,10 @@
     @getChangedDate="getChangedDate"
   >
     <template #dateCellContent="{ data }">
-      {{ data?.data?.date }}
+      {{ data?.data }}
     </template>
     <template #weekCellContent="{ data }">
-      {{ data?.data?.data }}
+      {{ data?.data }}
     </template>
   </vue3ExtendCalendar>
 </template>
@@ -81,11 +81,11 @@ const getTotalData = async () => {
   propTotalData.value = [];
   setTimeout(() => {
     propTotalData.value = [
-      { data: '1', duration: '2023-02-01~2023-02-04' },
-      { data: '2', duration: '2023-02-05~2023-02-11' },
-      { data: '3', duration: '2023-02-12~2023-02-18' },
-      { data: '4', duration: '2023-02-19~2023-02-25' },
-      { data: '월합계', duration: '2023-02-01~2023-02-28' },
+      { data: '1', date: '2023-02-01~2023-02-04' },
+      { data: '2', date: '2023-02-05~2023-02-11' },
+      { data: '3', date: '2023-02-12~2023-02-18' },
+      { data: '4', date: '2023-02-19~2023-02-25' },
+      { data: '월합계', date: '2023-02-01~2023-02-28' },
     ];
   }, 1000);
 };
