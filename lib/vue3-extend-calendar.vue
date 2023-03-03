@@ -77,7 +77,7 @@ const emits = defineEmits(['getCellData', 'getChangedDate']);
 const props = defineProps({
   data: { type: Object, default: 'default', require: false },
   total: { type: Boolean, default: true, require: false },
-  totalData: { type: Object, require: false },
+  totalData: { type: Object, default: 'default', require: false },
   columns: { type: Array, default: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'], require: false },
   darkMode: { type: Boolean, default: false, require: false },
   dateScope: { type: Array, default: ['0000-00', '9999-99'], require: false },
@@ -167,7 +167,7 @@ const setCalendar = async (arr: any) =>
       const weekIndex = Math.floor((startPoint + i) / 8);
 
       if (day === 7) {
-        if (propTotal.value) {
+        if (propTotalData.value !== 'default') {
           const duration: any = Object.values(week).filter((e: any) => e?.fullDate !== null);
           week['total'] = {
             date: 'Week',
@@ -191,7 +191,7 @@ const setCalendar = async (arr: any) =>
       }
     }
 
-    if (propTotal.value) {
+    if (propTotalData.value !== 'default') {
       let monthTotal: any = {};
 
       for (let i = 0; i < 7; i++) {
@@ -248,9 +248,10 @@ const process = async () => {
   columns.value = propColumns.value;
   columns.value.length = 8;
 
-  if (!propTotal.value) columns.value.pop();
-
   let data: any = propData.value;
+  let totalData: any = propTotalData.value;
+
+  if (totalData === 'default') columns.value.pop();
 
   const getBaseArr = await getBaseCalenderArr(data === 'default' ? {} : data);
   showData.value = getBaseArr;
@@ -261,11 +262,14 @@ const process = async () => {
   const isEmpty = Object.keys(data).length <= 0 ? true : false;
 
   if (!isEmpty) {
-    if (!propTotal.value) {
+    if (totalData === 'default') {
       loading.value = false;
     } else {
       showData.value = await setTotalData(getCalendar);
-      loading.value = false;
+      const isTotalDataEmpty = Object.keys(totalData).length <= 0 ? true : false;
+      if (!isTotalDataEmpty) {
+        loading.value = false;
+      }
     }
   }
 };

@@ -1,13 +1,17 @@
 <template>
   <vue3ExtendCalendar
     :data="data"
+    :totalData="propTotalData"
     :columns="isColumns"
     :dateScope="['2023-01', '2023-10']"
     @getCellData="getCellData"
     @getChangedDate="getChangedDate"
   >
     <template #dateCellContent="{ data }">
-      {{ data }}
+      {{ data?.data?.date }}
+    </template>
+    <template #weekCellContent="{ data }">
+      {{ data?.data?.data }}
     </template>
   </vue3ExtendCalendar>
 </template>
@@ -28,20 +32,14 @@ const isColumns = [
   'table.thead.total',
 ];
 
-const propTotalData = [
-  { data: '1', duration: '2023-02-01~2023-02-04' },
-  { data: '2', duration: '2023-02-05~2023-02-11' },
-  { data: '3', duration: '2023-02-05~2023-02-11' },
-  { data: '4', duration: '2023-02-05~2023-02-11' },
-  { data: '5', duration: '2023-02-05~2023-02-11' },
-  { data: '월합계', duration: '2023-02-05~2023-02-11' },
-];
+const propTotalData = ref<any>([]);
 
 const getCellData = (val: any) => {
   console.log(val);
 };
 const getChangedDate = (val: any) => {
   getCalendarData();
+  getTotalData();
 };
 
 const getCalendarData = async () => {
@@ -79,8 +77,22 @@ const getCalendarData = async () => {
     ];
   }, 500);
 };
+const getTotalData = async () => {
+  propTotalData.value = [];
+  setTimeout(() => {
+    propTotalData.value = [
+      { data: '1', duration: '2023-02-01~2023-02-04' },
+      { data: '2', duration: '2023-02-05~2023-02-11' },
+      { data: '3', duration: '2023-02-05~2023-02-11' },
+      { data: '4', duration: '2023-02-05~2023-02-11' },
+      { data: '5', duration: '2023-02-05~2023-02-11' },
+      { data: '월합계', duration: '2023-02-05~2023-02-11' },
+    ];
+  }, 3000);
+};
 
 onBeforeMount(() => {
+  getTotalData();
   getCalendarData();
 });
 </script>
