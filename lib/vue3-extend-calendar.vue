@@ -218,29 +218,24 @@ const setTotalData = async (val: any) =>
 
     const data = await propTotalData.value;
 
-    if (data) {
-      const isOrder = data.map((e: any) => e.duration).includes(undefined);
-      if (isOrder) {
-        data?.forEach((item: any) => {
-          arr.filter((el: any) => {
-            const duration = el.total.duration.replaceAll(' ', '');
-            if (duration === item.duration) {
-              el.total.data = item;
-            }
-          });
+    const isEmpty = data.map((e: any) => e.duration).length > 0 ? true : false;
+    if (isEmpty) {
+      data?.forEach((item: any) => {
+        arr.filter((el: any) => {
+          const duration = el.total.duration.replaceAll(' ', '');
+          if (duration === item.duration) {
+            el.total.data = item;
+          } else {
+            if (el.total.data === undefined) el.total.data = null;
+          }
         });
-      } else {
-        data?.forEach((item: any, index: number) => {
-          arr[index].total.data = item;
-        });
-      }
-      resolve(arr);
-    } else {
-      val.forEach((item: any) => {
-        item.total.data = null;
       });
-      resolve(arr);
+    } else {
+      arr?.forEach((e: any) => {
+        e.total.data = null;
+      });
     }
+    resolve(arr);
   });
 const process = async () => {
   loading.value = true;

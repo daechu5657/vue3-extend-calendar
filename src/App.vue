@@ -83,12 +83,11 @@ const getTotalData = async () => {
     propTotalData.value = [
       { data: '1', duration: '2023-02-01~2023-02-04' },
       { data: '2', duration: '2023-02-05~2023-02-11' },
-      { data: '3', duration: '2023-02-05~2023-02-11' },
-      { data: '4', duration: '2023-02-05~2023-02-11' },
-      { data: '5', duration: '2023-02-05~2023-02-11' },
-      { data: '월합계', duration: '2023-02-05~2023-02-11' },
+      { data: '3', duration: '2023-02-12~2023-02-18' },
+      { data: '4', duration: '2023-02-19~2023-02-25' },
+      { data: '월합계', duration: '2023-02-01~2023-02-28' },
     ];
-  }, 3000);
+  }, 1000);
 };
 
 onBeforeMount(() => {
