@@ -23,7 +23,7 @@ const data: any = ref([]);
 
 const propTotalData = ref<any>([]);
 
-const getCellData = (val: any) => {
+const getCellData = (val: any, el: any) => {
   console.log(val);
 };
 const getChangedDate = (val: any) => {

@@ -34,7 +34,7 @@
               v-for="(item, idx) in items"
               :key="idx"
               class="vue3-extend-calendar-tbody"
-              @click="() => getCellData(item)"
+              @click="(el:any) => getCellData(item,el)"
             >
               <div
                 class="vue3-extend-calendar-tbody-inner-wrap"
@@ -303,14 +303,15 @@ const changeCalendar = (type: any, value: number) => {
   current.value[`${type}`] += value;
   emits('getChangedDate', current.value.YYYYMM);
 };
-const getCellData = (cellData: any) => {
+const getCellData = (cellData: any, el: any) => {
   const data = JSON.parse(JSON.stringify(cellData));
 
   if (data?.date !== null) {
     if (Number(data.date)) {
       data.date = Number(data.date);
     }
-    emits('getCellData', data);
+
+    emits('getCellData', { data: cellData, isEmpty: el.target?.children[1]?.innerText === '' ? true : false });
   }
 };
 
@@ -562,6 +563,7 @@ ul {
     min-height: 40px;
     text-overflow: ellipsis;
     overflow: hidden;
+    pointer-events: none;
   }
   &-content-wrap {
     position: static;
@@ -574,6 +576,7 @@ ul {
     text-overflow: ellipsis;
     overflow-x: hidden;
     overflow-y: auto;
+    pointer-events: none;
     &::-webkit-scrollbar {
       width: 3px;
       background-color: #f0f0f0;
