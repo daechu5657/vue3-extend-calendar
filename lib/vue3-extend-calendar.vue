@@ -244,6 +244,7 @@ const setCalendar = async (arr: any) =>
 
       monthTotal['total'] = {
         info: 'month',
+        order: 'month',
         date: `${startYYYYMMDD}~${endYYYYMMDD}`,
       };
       month.push(monthTotal);
@@ -253,26 +254,16 @@ const setCalendar = async (arr: any) =>
 const setTotalData = async (val: any) =>
   await new Promise(async (resolve, reject) => {
     const arr = val.slice(0);
-
     const data = await propTotalData.value;
 
-    const isEmpty = data.map((e: any) => e.date).length > 0 ? true : false;
-    if (isEmpty) {
-      data?.forEach((item: any) => {
-        arr.filter((el: any) => {
-          const duration = el.total.date.replaceAll(' ', '');
-          if (duration === item.date) {
-            el.total.data = item;
-          } else {
-            if (el.total.data === undefined) el.total.data = null;
-          }
-        });
+    data?.forEach((item: any) => {
+      arr.filter((el: any) => {
+        const order = el.total.order;
+        if (order === item.order) {
+          el.total.data = item;
+        }
       });
-    } else {
-      arr?.forEach((e: any) => {
-        e.total.data = null;
-      });
-    }
+    });
     resolve(arr);
   });
 const process = async () => {

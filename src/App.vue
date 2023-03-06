@@ -69,15 +69,18 @@ const getCalendarData = async () => {
 const getTotalData = async () => {
   propTotalData.value = [];
   setTimeout(() => {
-    propTotalData.value = [
-      { data: '1', date: '2023-02-01~2023-02-04' },
-      { data: '2', date: '2023-02-05~2023-02-11' },
-      { data: '3', date: '2023-02-12~2023-02-18' },
-      { data: '4', date: '2023-02-19~2023-02-25' },
-      { data: '월합계', date: '2023-02-01~2023-02-28' },
-    ];
+    propTotalData.value = dummy;
   }, 1500);
 };
+
+const dummy = [
+  { cash: '57938', point: '-1', charge: '10312', exchange: '1008', order: 1 },
+  { cash: '124326', point: '0', charge: '311', exchange: '1000', order: 2 },
+  { cash: '190444', point: '210', charge: '79808', exchange: '0', order: 3 },
+  { cash: '0', point: '0', charge: '0', exchange: '0', order: 4 },
+  { cash: '0', point: '0', charge: '0', exchange: '0', order: 5 },
+  { order: 'month', cash: '372708', point: '209', charge: '90431', exchange: '2008' },
+];
 
 onBeforeMount(() => {
   getTotalData();
