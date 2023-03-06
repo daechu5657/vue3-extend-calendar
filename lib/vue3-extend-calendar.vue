@@ -66,13 +66,26 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, onBeforeMount, computed, ref, ComputedRef, watch } from 'vue';
+import { defineProps, onBeforeMount, computed, ref, watch } from 'vue';
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
+interface stateWatcher {
+  mainData: number;
+  totalData: number;
+}
+enum State {
+  noMainData = 0,
+  emptyMainData = 1,
+  fulfilledMainData = 2,
+  noTotalData = 3,
+  emptyTotalData = 4,
+  fulfilledTotalData = 5,
+}
 const emits = defineEmits(['getCellData', 'getChangedDate']);
 const props = defineProps({
   data: { type: Object, default: 'default', require: false },
@@ -80,22 +93,21 @@ const props = defineProps({
   totalData: { type: Object, default: 'default', require: false },
   columns: { type: Array, default: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'], require: false },
   darkMode: { type: Boolean, default: false, require: false },
-  dateScope: { type: Array, default: ['0000-00', '9999-99'], require: false },
+  dateScope: { type: Array, default: ['1970-01', '9999-99'], require: false },
 });
-const propData = computed(() => props.data);
-const propTotal = computed(() => props.total);
-const propColumns = computed(() => props.columns);
-const darkMode = computed(() => props.darkMode);
-const propTotalData: ComputedRef<any> = computed((): any => props.totalData);
+const propData: any = computed(() => props.data);
+const propColumns: any = computed(() => props.columns);
+const darkMode: any = computed(() => props.darkMode);
+const propTotalData: any = computed((): any => props.totalData);
 const dateScope: any = computed(() => props.dateScope);
 const current: any = ref({
   year: dayjs().year(),
   month: dayjs().month() + 1,
   YYYYMM: computed(() => dayjs(current.value.year + '-' + current.value.month).format('YYYY-MM')),
 });
-const columns: any = ref([]);
-const showData: any = ref([]);
-const loading = ref(true);
+const columns = ref<string[]>([]);
+const showData = ref<any>([]);
+const loading = ref<boolean>(true);
 const expectationDate = ref({
   min: computed(() =>
     dayjs(dayjs(current.value.YYYYMM).add(-1, 'month').format('YYYY-MM')).isSameOrAfter(dateScope.value[0])
@@ -104,8 +116,34 @@ const expectationDate = ref({
     dayjs(dayjs(current.value.YYYYMM).add(1, 'month').format('YYYY-MM')).isSameOrBefore(dateScope.value[1])
   ),
 });
+const currentState = ref<stateWatcher>({
+  mainData: 0,
+  totalData: 3,
+});
 
-const getBaseCalenderArr = async (val: any) =>
+const stateWatcher = async () =>
+  await new Promise<void>((resolve, reject) => {
+    const hasMainData = Object.keys(propData.value).length > 0;
+    const hasTotalData = Object.keys(propTotalData.value).length > 0;
+
+    if (propData.value === 'default') {
+      currentState.value.mainData = State.noMainData;
+    } else if (hasMainData) {
+      currentState.value.mainData = State.fulfilledMainData;
+    } else if (!hasMainData) {
+      currentState.value.mainData = State.emptyMainData;
+    }
+
+    if (propTotalData.value === 'default') {
+      currentState.value.totalData = State.noTotalData;
+    } else if (hasTotalData) {
+      currentState.value.totalData = State.fulfilledTotalData;
+    } else if (!hasTotalData) {
+      currentState.value.totalData = State.emptyTotalData;
+    }
+    resolve();
+  });
+const setBaseCalenderArr = async (val: any) =>
   await new Promise((resolve, reject) => {
     const injectMonth = computed(() => current.value.month - 1);
     const numberRepeat = dayjs().month(injectMonth.value).daysInMonth();
@@ -167,7 +205,7 @@ const setCalendar = async (arr: any) =>
       const weekIndex = Math.floor((startPoint + i) / 8);
 
       if (day === 7) {
-        if (propTotalData.value !== 'default') {
+        if (currentState.value.totalData !== State.noTotalData) {
           const duration: any = Object.values(week).filter((e: any) => e?.fullDate !== null);
           week['total'] = {
             info: 'week',
@@ -191,7 +229,7 @@ const setCalendar = async (arr: any) =>
       }
     }
 
-    if (propTotalData.value !== 'default') {
+    if (currentState.value.totalData !== State.noTotalData) {
       let monthTotal: any = {};
 
       for (let i = 0; i < 7; i++) {
@@ -239,20 +277,13 @@ const setTotalData = async (val: any) =>
   });
 const process = async () => {
   loading.value = true;
-  showData.value = [];
   columns.value = propColumns.value;
-  columns.value.length = 8;
+  const state = currentState.value;
+  if (currentState.value.totalData === State.noTotalData) columns.value.pop();
 
-  let data: any = propData.value;
-  let totalData: any = propTotalData.value;
-
-  if (totalData === 'default') columns.value.pop();
-
-  const getBaseArr = await getBaseCalenderArr(data === 'default' ? {} : data);
+  const getBaseArr = await setBaseCalenderArr(currentState.value.mainData === State.noMainData ? {} : propData.value);
   showData.value = getBaseArr;
-
   const getCalendar: any = await setCalendar(getBaseArr);
-
   const getCalendarWithoutData = getCalendar.map((e: any) => {
     let arr: any = {};
     Object.keys(e).map((key: any) => {
@@ -261,21 +292,21 @@ const process = async () => {
     });
     return arr;
   });
-
   showData.value = getCalendarWithoutData;
 
-  const isEmpty = Object.keys(data).length <= 0 ? true : false;
-  if (!isEmpty) {
-    if (totalData === 'default') {
+  const mainDataProcess = async () => {
+    if (state.mainData !== State.emptyMainData) totalDataProcess();
+  };
+  const totalDataProcess = async () => {
+    if (state.totalData === State.noTotalData) {
       loading.value = false;
-    } else {
-      const isTotalDataEmpty = Object.keys(totalData).length <= 0 ? true : false;
-      if (!isTotalDataEmpty) {
-        showData.value = await setTotalData(getCalendar);
-        loading.value = false;
-      }
+    } else if (state.totalData === State.fulfilledTotalData) {
+      showData.value = await setTotalData(getCalendar);
+      loading.value = false;
     }
-  }
+  };
+
+  await mainDataProcess();
 };
 const changeCalendar = (type: any, value: number) => {
   current.value[`${type}`] += value;
@@ -291,6 +322,7 @@ const getCellData = (cellData: any) => {
     emits('getCellData', data);
   }
 };
+
 watch(
   current,
   async (val: any) => {
@@ -301,16 +333,16 @@ watch(
       current.value.month = 12;
       current.value.year -= 1;
     }
-
-    // await process();
   },
   { deep: true }
 );
-watch(props, (val) => {
-  process();
+watch(props, async () => {
+  await stateWatcher();
+  await process();
 });
 
 onBeforeMount(async () => {
+  await stateWatcher();
   await process();
 });
 </script>

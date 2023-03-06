@@ -2,7 +2,6 @@
   <vue3ExtendCalendar
     :data="data"
     :totalData="propTotalData"
-    :columns="isColumns"
     :dateScope="['2023-01', '2023-10']"
     @getCellData="getCellData"
     @getChangedDate="getChangedDate"
@@ -21,16 +20,6 @@ import vue3ExtendCalendar from '../lib/vue3-extend-calendar.vue';
 
 import { onBeforeMount, ref } from 'vue';
 const data: any = ref([]);
-const isColumns = [
-  'table.thead.sun',
-  'table.thead.mon',
-  'table.thead.tue',
-  'table.thead.wed',
-  'table.thead.thu',
-  'table.thead.fri',
-  'table.thead.sat',
-  'table.thead.total',
-];
 
 const propTotalData = ref<any>([]);
 
@@ -43,7 +32,7 @@ const getChangedDate = (val: any) => {
 };
 
 const getCalendarData = async () => {
-  data.value = {};
+  data.value = [];
   setTimeout(() => {
     data.value = [
       { date: '2023-02-01', cash: '11719', point: '-1', charge: '212', exchange: null },
@@ -75,7 +64,7 @@ const getCalendarData = async () => {
       { date: '2023-02-27', cash: null, point: null, charge: null, exchange: null },
       { date: '2023-02-28', cash: null, point: null, charge: null, exchange: null },
     ];
-  }, 500);
+  }, 2000);
 };
 const getTotalData = async () => {
   propTotalData.value = [];
@@ -87,7 +76,7 @@ const getTotalData = async () => {
       { data: '4', date: '2023-02-19~2023-02-25' },
       { data: '월합계', date: '2023-02-01~2023-02-28' },
     ];
-  }, 1000);
+  }, 1500);
 };
 
 onBeforeMount(() => {
