@@ -567,6 +567,7 @@ ul {
 .vue3-extend-calendar-tbody {
   vertical-align: middle;
   border-color: inherit;
+  pointer-events: none;
 
   tr {
     display: table-row;
@@ -585,6 +586,7 @@ ul {
     transition: background 0.3s;
     margin: 0 4px;
     cursor: pointer;
+    pointer-events: all;
     &:hover {
       background-color: #f5f5f5;
     }
