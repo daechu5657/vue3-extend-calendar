@@ -76,29 +76,37 @@ dayjs.extend(isSameOrBefore);
 
 interface stateWatcher {
   mainData: number;
-  totalData: number;
+  weekData: number;
+  monthData: number;
 }
 enum State {
   noMainData = 0,
   emptyMainData = 1,
   fulfilledMainData = 2,
-  noTotalData = 3,
-  emptyTotalData = 4,
-  fulfilledTotalData = 5,
+  //
+  noWeekData = 3,
+  emptyWeekData = 4,
+  fulfilledWeekData = 5,
+  //
+  noMonthData = 6,
+  emptyMonthData = 7,
+  fulfilledMonthData = 8,
 }
 const emits = defineEmits(['getCellData', 'getChangedDate']);
 const props = defineProps({
   data: { type: Object, default: 'default', require: false },
   total: { type: Boolean, default: true, require: false },
-  totalData: { type: Object, default: 'default', require: false },
+  weekData: { type: Object, default: 'default', require: false },
+  monthData: { type: Object, default: 'default', require: false },
   columns: { type: Array, default: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'], require: false },
   darkMode: { type: Boolean, default: false, require: false },
   dateScope: { type: Array, default: ['1970-01', '9999-99'], require: false },
 });
 const propData: any = computed(() => props.data);
 const propColumns: any = computed(() => props.columns);
+const propWeekData: any = computed(() => props.weekData);
+const propMonthData: any = computed(() => props.monthData);
 const darkMode: any = computed(() => props.darkMode);
-const propTotalData: any = computed((): any => props.totalData);
 const dateScope: any = computed(() => props.dateScope);
 const current: any = ref({
   year: dayjs().year(),
@@ -118,13 +126,14 @@ const expectationDate = ref({
 });
 const currentState = ref<stateWatcher>({
   mainData: 0,
-  totalData: 3,
+  weekData: 3,
+  monthData: 6,
 });
 
 const stateWatcher = async () =>
   await new Promise<void>((resolve, reject) => {
     const hasMainData = Object.keys(propData.value).length > 0;
-    const hasTotalData = Object.keys(propTotalData.value).length > 0;
+    const hasTotalData = Object.keys(propWeekData.value).length > 0;
 
     if (propData.value === 'default') {
       currentState.value.mainData = State.noMainData;
@@ -134,12 +143,20 @@ const stateWatcher = async () =>
       currentState.value.mainData = State.emptyMainData;
     }
 
-    if (propTotalData.value === 'default') {
-      currentState.value.totalData = State.noTotalData;
+    if (propWeekData.value === 'default') {
+      currentState.value.weekData = State.noWeekData;
     } else if (hasTotalData) {
-      currentState.value.totalData = State.fulfilledTotalData;
+      currentState.value.weekData = State.fulfilledWeekData;
     } else if (!hasTotalData) {
-      currentState.value.totalData = State.emptyTotalData;
+      currentState.value.weekData = State.emptyWeekData;
+    }
+
+    if (propMonthData.value === 'default') {
+      currentState.value.monthData = State.noMonthData;
+    } else if (hasTotalData) {
+      currentState.value.monthData = State.fulfilledMonthData;
+    } else if (!hasTotalData) {
+      currentState.value.monthData = State.emptyMonthData;
     }
     resolve();
   });
@@ -189,7 +206,6 @@ const setCalendar = async (arr: any) =>
   new Promise((resolve, reject) => {
     let month: any = [];
     let week: any = {};
-
     const startPoint = dayjs(current.value.YYYYMM).startOf('month').day();
 
     for (let i = 0; i < startPoint; i++) {
@@ -205,7 +221,7 @@ const setCalendar = async (arr: any) =>
       const weekIndex = Math.floor((startPoint + i) / 8);
 
       if (day === 7) {
-        if (currentState.value.totalData !== State.noTotalData) {
+        if (currentState.value.weekData !== State.noWeekData || currentState.value.monthData !== State.noMonthData) {
           const duration: any = Object.values(week).filter((e: any) => e?.fullDate !== null);
           week['total'] = {
             info: 'week',
@@ -229,7 +245,7 @@ const setCalendar = async (arr: any) =>
       }
     }
 
-    if (currentState.value.totalData !== State.noTotalData) {
+    if (currentState.value.weekData !== State.noWeekData || currentState.value.monthData !== State.noMonthData) {
       let monthTotal: any = {};
 
       for (let i = 0; i < 7; i++) {
@@ -244,22 +260,36 @@ const setCalendar = async (arr: any) =>
 
       monthTotal['total'] = {
         info: 'month',
-        order: 'month',
         date: `${startYYYYMMDD}~${endYYYYMMDD}`,
       };
       month.push(monthTotal);
     }
     resolve(month);
   });
-const setTotalData = async (val: any) =>
+const setWeekData = async (val: any) =>
   await new Promise(async (resolve, reject) => {
     const arr = val.slice(0);
-    const data = await propTotalData.value;
+    const data = await propWeekData.value;
 
     data?.forEach((item: any) => {
       arr.filter((el: any) => {
-        const order = el.total.order;
+        const order = el?.total?.order;
         if (order === item.order) {
+          el.total.data = item;
+        }
+      });
+    });
+    resolve(arr);
+  });
+const setMonthData = async (val: any) =>
+  await new Promise(async (resolve, reject) => {
+    const arr = val.slice(0);
+    const data = await propMonthData.value;
+
+    data?.forEach((item: any) => {
+      arr.filter((el: any) => {
+        const month = el?.total?.info;
+        if (month === 'month') {
           el.total.data = item;
         }
       });
@@ -270,7 +300,12 @@ const process = async () => {
   loading.value = true;
   columns.value = propColumns.value;
   const state = currentState.value;
-  if (currentState.value.totalData === State.noTotalData) columns.value.pop();
+  if (state.weekData === State.noWeekData && state.monthData === State.noMonthData) {
+    const index = columns.value.findIndex((e) => e === 'Total');
+    if (index !== -1) {
+      columns.value.splice(index, 1);
+    }
+  }
 
   const getBaseArr = await setBaseCalenderArr(currentState.value.mainData === State.noMainData ? {} : propData.value);
   showData.value = getBaseArr;
@@ -284,19 +319,27 @@ const process = async () => {
     return arr;
   });
   showData.value = getCalendarWithoutData;
-
   const mainDataProcess = async () => {
-    if (state.mainData !== State.emptyMainData) totalDataProcess();
+    if (state.mainData !== State.emptyMainData) weekDataProcess();
   };
-  const totalDataProcess = async () => {
-    if (state.totalData === State.noTotalData) {
-      loading.value = false;
-    } else if (state.totalData === State.fulfilledTotalData) {
-      showData.value = await setTotalData(getCalendar);
-      loading.value = false;
+  const weekDataProcess = async () => {
+    if (state.weekData === State.noWeekData) {
+      monthDataProcess(getCalendar);
+    } else if (state.weekData === State.fulfilledWeekData) {
+      const data = await setWeekData(getCalendar);
+      monthDataProcess(data);
     }
   };
 
+  const monthDataProcess = async (val: any) => {
+    if (state.monthData === State.noMonthData) {
+      showData.value = val;
+      loading.value = false;
+    } else if (state.monthData === State.fulfilledMonthData) {
+      showData.value = await setMonthData(val);
+      loading.value = false;
+    }
+  };
   await mainDataProcess();
 };
 const changeCalendar = (type: any, value: number) => {

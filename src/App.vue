@@ -1,8 +1,8 @@
 <template>
   <vue3ExtendCalendar
     :data="data"
-    :totalData="propTotalData"
-    :dateScope="['2023-01', '2023-10']"
+    :weekData="propTotalData"
+    :monthData="monthData"
     @getCellData="getCellData"
     @getChangedDate="getChangedDate"
   >
@@ -11,6 +11,9 @@
     </template>
     <template #weekCellContent="{ data }">
       {{ data?.data }}
+    </template>
+    <template #monthCellContent="{ data }">
+      {{ data.data }}
     </template>
   </vue3ExtendCalendar>
 </template>
@@ -22,7 +25,7 @@ import { onBeforeMount, ref } from 'vue';
 const data: any = ref([]);
 
 const propTotalData = ref<any>([]);
-
+const monthData = ref<any>([]);
 const getCellData = (val: any, el: any) => {
   console.log(val);
 };
@@ -68,19 +71,21 @@ const getCalendarData = async () => {
 };
 const getTotalData = async () => {
   propTotalData.value = [];
+  monthData.value = [];
   setTimeout(() => {
-    propTotalData.value = dummy;
+    propTotalData.value = dummy1;
+    monthData.value = dummy2;
   }, 1500);
 };
 
-const dummy = [
+const dummy1 = [
   { cash: '57938', point: '-1', charge: '10312', exchange: '1008', order: 1 },
   { cash: '124326', point: '0', charge: '311', exchange: '1000', order: 2 },
   { cash: '190444', point: '210', charge: '79808', exchange: '0', order: 3 },
   { cash: '0', point: '0', charge: '0', exchange: '0', order: 4 },
   { cash: '0', point: '0', charge: '0', exchange: '0', order: 5 },
-  { order: 'month', cash: '372708', point: '209', charge: '90431', exchange: '2008' },
 ];
+const dummy2 = [{ cash: '372708', point: '209', charge: '90431', exchange: '2008' }];
 
 onBeforeMount(() => {
   getTotalData();
