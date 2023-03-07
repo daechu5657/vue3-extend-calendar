@@ -30,16 +30,15 @@
         </thead>
         <tbody>
           <tr v-for="(items, index) in showData" :key="index">
-            <td
-              v-for="(item, idx) in items"
-              :key="idx"
-              class="vue3-extend-calendar-tbody"
-              @click="(el:any) => getCellData(item,el)"
-            >
+            <td v-for="(item, idx) in items" :key="idx" class="vue3-extend-calendar-tbody">
               <div
                 class="vue3-extend-calendar-tbody-inner-wrap"
-                :class="{ null: item?.date === null, today: item?.fullDate === dayjs().format('YYYY-MM-DD') }"
+                :class="{
+                  null: item?.date === null || item?.data === null,
+                  today: item?.fullDate === dayjs().format('YYYY-MM-DD'),
+                }"
                 :data-darkMode="darkMode"
+                @click="(el:any) => getCellData(item,el)"
               >
                 <div class="vue3-extend-calendar-tbody-date">
                   <slot name="dateCellTitle" :data="item" v-if="item?.date !== null && !item?.info">
@@ -620,7 +619,8 @@ ul {
     text-overflow: ellipsis;
     overflow-x: hidden;
     overflow-y: auto;
-    pointer-events: none;
+    // pointer-events: none;
+
     &::-webkit-scrollbar {
       width: 3px;
       background-color: #f0f0f0;
