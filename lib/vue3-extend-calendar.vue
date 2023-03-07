@@ -348,7 +348,6 @@ const changeCalendar = (type: any, value: number) => {
 };
 const getCellData = (cellData: any, el: any) => {
   const data = JSON.parse(JSON.stringify(cellData));
-
   if (data?.date !== null) {
     if (Number(data.date)) {
       data.date = Number(data.date);
