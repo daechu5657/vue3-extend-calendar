@@ -34,7 +34,7 @@
               <div
                 class="vue3-extend-calendar-tbody-inner-wrap"
                 :class="{
-                  null: item?.date === null || item?.data === null,
+                  null: item?.date === null,
                   today: item?.fullDate === dayjs().format('YYYY-MM-DD'),
                 }"
                 :data-darkMode="darkMode"
@@ -49,7 +49,7 @@
                   <slot name="monthCellTitle" :data="item" v-if="item?.info === 'month'"> </slot>
                 </div>
 
-                <div class="vue3-extend-calendar-tbody-content-wrap" :data-darkMode="darkMode">
+                <div class="vue3-extend-calendar-tbody-content-wrap" name="content" :data-darkMode="darkMode">
                   <slot name="dateCellContent" :data="item" v-if="item?.date !== null && !item?.info" />
                   <slot name="nullCellTitle" :data="item" v-if="item?.date === null" />
                   <slot name="weekCellContent" :data="item" v-if="item?.info === 'week'" />
@@ -346,13 +346,14 @@ const changeCalendar = (type: any, value: number) => {
   emits('getChangedDate', current.value.YYYYMM);
 };
 const getCellData = (cellData: any, el: any) => {
+  const isEmpty = el.target.offsetParent.children[0].children.namedItem('content').innerText === '';
   const data = JSON.parse(JSON.stringify(cellData));
   if (data?.date !== null) {
     if (Number(data.date)) {
       data.date = Number(data.date);
     }
 
-    emits('getCellData', { data: cellData, isEmpty: el.target?.children[1]?.innerText === '' ? true : false });
+    emits('getCellData', { data: cellData, isEmpty: isEmpty });
   }
 };
 
