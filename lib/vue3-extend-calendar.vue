@@ -34,7 +34,7 @@
               <div
                 class="vue3-extend-calendar-tbody-inner-wrap"
                 :class="{
-                  null: item?.date === null,
+                  null: nullRule === 'default' ? item?.date === null : nullRule(item),
                   today: item?.fullDate === dayjs().format('YYYY-MM-DD'),
                 }"
                 :data-darkMode="darkMode"
@@ -100,6 +100,7 @@ const props = defineProps({
   columns: { type: Array, default: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Total'], require: false },
   darkMode: { type: Boolean, default: false, require: false },
   dateScope: { type: Array, default: ['1970-01', '9999-99'], require: false },
+  nullRule: { type: Object, default: 'default', require: false },
 });
 const propData: any = computed(() => props.data);
 const propColumns: any = computed(() => props.columns);
@@ -107,6 +108,7 @@ const propWeekData: any = computed(() => props.weekData);
 const propMonthData: any = computed(() => props.monthData);
 const darkMode: any = computed(() => props.darkMode);
 const dateScope: any = computed(() => props.dateScope);
+const nullRule: any = computed(() => props.nullRule);
 const current: any = ref({
   year: dayjs().year(),
   month: dayjs().month() + 1,

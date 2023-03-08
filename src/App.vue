@@ -3,6 +3,7 @@
     :data="data"
     :weekData="propTotalData"
     :monthData="monthData"
+    :nullRule="test"
     @getCellData="getCellData"
     @getChangedDate="getChangedDate"
   >
@@ -82,6 +83,10 @@ const dummy1 = [
   { cash: '0', point: '0', charge: '0', exchange: '0', order: 5 },
 ];
 const dummy2 = [{ cash: '372708', point: '209', charge: '90431', exchange: '2008' }];
+
+const test = (item: any) => {
+  return item?.date === null || item?.info !== undefined || item?.data === null;
+};
 
 onBeforeMount(() => {
   getTotalData();
